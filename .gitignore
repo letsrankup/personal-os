@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.db
+*.sqlite3
+.pytest_cache/
+
+# Node
+node_modules/
+.next/
+out/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+.env.local
+*.pem
+*.key
+
+# Agent-generated output (developer agent sites) — keep the dir, ignore content
+apps/api/agent_workspace/*
+!apps/api/agent_workspace/.gitkeep
+
+# Logs / temp
+*.log
+/tmp/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

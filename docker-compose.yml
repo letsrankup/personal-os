@@ -1,0 +1,74 @@
+# PERSONAL OS — local/production Docker Compose
+# NOTE: written for Phase 10; Docker is not installed in the build sandbox,
+# so this file is correct-by-construction but untested there (see docs/DEPLOYMENT.md).
+#
+# Usage:
+#   cp .env.example .env   # fill in real secrets first
+#   docker compose up --build
+#   Web: http://localhost:3000   API: http://localhost:8000/health
+#
+# The API keeps its SQLite database on the named volume `api-data`
+# (DATABASE_URL below) unless you pass your own DATABASE_URL
+# (e.g. a Supabase/Postgres URL) in the environment or .env file.
+
+services:
+  api:
+    build:
+      context: ./apps/api
+    image: personal-os-api
+    restart: unless-stopped
+    environment:
+      # Default: SQLite on the persistent volume. Override by exporting
+      # DATABASE_URL before `docker compose up` (your value wins).
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////app/data/personal_os.db}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8000}
+      AI_PROVIDER: ${AI_PROVIDER:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+      RATE_LIMIT_AUTH_PER_MIN: ${RATE_LIMIT_AUTH_PER_MIN:-}
+      RATE_LIMIT_COMMANDS_PER_MIN: ${RATE_LIMIT_COMMANDS_PER_MIN:-}
+    volumes:
+      - api-data:/app/data
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).status == 200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+  web:
+    build:
+      context: ./apps/web
+      args:
+        # Baked into the browser bundle at build time — this is the URL the
+        # USER'S BROWSER uses to reach the API, not a container-internal URL.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    image: personal-os-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/login"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+volumes:
+  api-data:
