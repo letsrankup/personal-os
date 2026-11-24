@@ -30,7 +30,7 @@ export default function ProjectsPage() {
                 <Badge value={p.status} />
               </div>
               {p.description ? <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-400">{p.description}</p> : null}
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-800">
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.06]">
                 <div className="h-full bg-emerald-500" style={{ width: `${p.progress_pct}%` }} />
               </div>
               <div className="mt-2 flex flex-wrap gap-x-4 text-xs text-zinc-500">
