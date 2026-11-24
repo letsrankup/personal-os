@@ -184,3 +184,4 @@ Nothing below is faked or pre-connected — each item needs you:
 - External sends/publishing require your approval first.
 - The Master Agent never reports a task complete unless its result is verified.
 - Untrusted webpage/document content is never treated as a system instruction.
+
