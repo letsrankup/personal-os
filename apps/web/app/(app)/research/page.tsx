@@ -33,7 +33,7 @@ export default function ResearchPage() {
               {m.tags.length > 0 ? (
                 <div className="mt-3 flex flex-wrap gap-1">
                   {m.tags.map((t, i) => (
-                    <span key={i} className="rounded-full border border-zinc-700 px-2 py-0.5 text-[11px] text-zinc-400">{t}</span>
+                    <span key={i} className="rounded-full border border-white/10 px-2 py-0.5 text-[11px] text-zinc-400">{t}</span>
                   ))}
                 </div>
               ) : null}

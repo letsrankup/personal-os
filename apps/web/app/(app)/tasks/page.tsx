@@ -61,11 +61,11 @@ export default function TasksPage() {
     <div>
       <PageTitle title="Task Management" sub="Every task the Master Agent planned and executed (GET /tasks)" />
       <div className="mb-4 flex flex-wrap gap-2">
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm">
+        <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm">
           <option value="">All statuses</option>
           {STATUSES.filter(Boolean).map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
-        <select value={agent} onChange={(e) => setAgent(e.target.value)} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm">
+        <select value={agent} onChange={(e) => setAgent(e.target.value)} className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm">
           <option value="">All agents</option>
           {agents.map((a) => <option key={a} value={a}>{a}</option>)}
         </select>
@@ -86,7 +86,7 @@ export default function TasksPage() {
                 <span className="text-xs text-zinc-500">{fmtDate(t.created_at)}</span>
               </button>
               {expanded?.id === t.id ? (
-                <div className="mt-3 space-y-2 border-t border-zinc-800 pt-3 text-sm">
+                <div className="mt-3 space-y-2 border-t border-white/10 pt-3 text-sm">
                   <p className="whitespace-pre-wrap text-zinc-300">{expanded.description}</p>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">
                     <span>Tier: {expanded.permission_tier}</span>
@@ -94,7 +94,7 @@ export default function TasksPage() {
                     <span>Started: {fmtDate(expanded.started_at)}</span>
                     <span>Completed: {fmtDate(expanded.completed_at)}</span>
                   </div>
-                  {expanded.result ? <div className="rounded-lg bg-zinc-800/60 p-3 whitespace-pre-wrap text-zinc-200">{expanded.result}</div> : null}
+                  {expanded.result ? <div className="rounded-lg bg-white/[0.06]/60 p-3 whitespace-pre-wrap text-zinc-200">{expanded.result}</div> : null}
                   {expanded.error ? <div className="rounded-lg bg-red-500/10 p-3 whitespace-pre-wrap text-red-200">{expanded.error}</div> : null}
                   {expanded.steps.length > 0 ? (
                     <div>

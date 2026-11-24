@@ -39,4 +39,5 @@ export interface ScheduledJob { id: string; name: string; kind: string; report_k
 export interface JobRunResult extends ScheduledJob { executed?: boolean; report_id?: string | null; error?: string | null }
 export interface Permission { id: string; action: string; tier: string; description: string }
 export interface Activity { id: string; actor: string; action: string; entity: string | null; entity_id: string | null; details: Record<string, unknown>; created_at: string }
+export interface FinanceEntry { id: string; kind: string; amount: number; currency: string; category: string; note: string; occurred_at: string; created_at: string }
 export interface Health { status: string; service: string; db: string; ai_provider?: string }
