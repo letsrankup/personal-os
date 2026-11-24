@@ -94,7 +94,7 @@ export default function IntegrationsPage() {
                 <button
                   onClick={() => check(r.provider)}
                   disabled={checking === r.provider}
-                  className="mt-3 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-200 hover:bg-zinc-800 disabled:opacity-50"
+                  className="mt-3 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50"
                 >
                   {checking === r.provider ? "Checking…" : "Check status"}
                 </button>
