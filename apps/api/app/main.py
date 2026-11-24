@@ -22,6 +22,7 @@ from .models import (
     Client,
     Conversation,
     FileRecord,
+    FinanceEntry,
     Integration,
     Memory,
     Message,
@@ -42,6 +43,7 @@ from .schemas import (
     ApprovalOut,
     ClientOut,
     FileOut,
+    FinanceEntryOut,
     IntegrationOut,
     JobIn,
     JobOut,
@@ -617,6 +619,22 @@ def list_activity(
         .limit(limit)
         .all()
     )
+
+
+@app.get("/finance", response_model=list[FinanceEntryOut])
+def list_finance_entries(
+    limit: int = Query(default=200, ge=1, le=500),
+    kind: str | None = Query(default=None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Read-only finance ledger (Futuristic UI): rows are written only by the
+    Finance Agent through commands; totals are computed by the client from
+    these real rows. No money ever moves through this endpoint."""
+    q = db.query(FinanceEntry).filter_by(user_id=current_user.id)
+    if kind in ("income", "expense"):
+        q = q.filter_by(kind=kind)
+    return q.order_by(FinanceEntry.occurred_at.desc()).limit(limit).all()
 
 
 # ---------------------------------------------------------------------------

@@ -292,3 +292,16 @@ class ActivityOut(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class FinanceEntryOut(BaseModel):
+    id: str
+    kind: str  # income | expense
+    amount: float
+    currency: str
+    category: str
+    note: str
+    occurred_at: datetime
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
