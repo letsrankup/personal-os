@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import type { Approval, CommandOut, Conversation, Message } from "@/lib/types";
-import { Badge, Card, Empty, ErrorBox, PageTitle, fmtDate } from "@/components/ui";
+import { Badge, Card, Empty, ErrorBox, PageTitle, btnCls, btnGhostCls, fmtDate, inputCls } from "@/components/ui";
+import AICore, { type CoreState } from "@/components/AICore";
 
 interface SpeechRecognitionLike {
   lang: string;
@@ -125,13 +126,27 @@ export default function CommandPage() {
     rec.start();
   }
 
+  const coreState: CoreState = busy
+    ? "THINKING"
+    : listening
+      ? "LISTENING"
+      : lastResult
+        ? lastResult.status === "COMPLETED"
+          ? "COMPLETED"
+          : lastResult.status === "FAILED"
+            ? "ERROR"
+            : lastResult.status === "WAITING_FOR_APPROVAL"
+              ? "PLANNING"
+              : "EXECUTING"
+        : "IDLE";
+
   return (
     <div>
-      <PageTitle title="AI Command Center" sub="Talk to the Master Agent — English and Roman Urdu both work." />
+      <PageTitle title="AI Workspace" sub="Talk to the Master Agent — English and Roman Urdu both work. The core mirrors the real state of your last command." />
       {error ? <div className="mb-3"><ErrorBox message={error} /></div> : null}
       <div className="grid gap-4 lg:grid-cols-[240px_1fr_300px]">
         <Card className="max-h-[70vh] overflow-y-auto">
-          <button onClick={newConversation} className="mb-3 w-full rounded-lg bg-zinc-100 py-2 text-sm font-medium text-zinc-900">
+          <button onClick={newConversation} className={`${btnCls} mb-3 w-full`}>
             + New conversation
           </button>
           {conversations.length === 0 ? (
@@ -142,7 +157,7 @@ export default function CommandPage() {
                 <li key={c.id}>
                   <button
                     onClick={() => selectConversation(c.id)}
-                    className={`w-full rounded-lg px-2 py-2 text-left text-sm ${c.id === activeId ? "bg-zinc-800 text-zinc-50" : "text-zinc-400 hover:bg-zinc-900"}`}
+                    className={`w-full rounded-xl px-2.5 py-2 text-left text-sm transition ${c.id === activeId ? "border border-cyan-300/25 bg-cyan-400/10 text-cyan-50" : "border border-transparent text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"}`}
                   >
                     <span className="block truncate">{c.title || "Untitled"}</span>
                     <span className="block text-[11px] text-zinc-500">{fmtDate(c.updated_at)}</span>
@@ -154,13 +169,22 @@ export default function CommandPage() {
         </Card>
 
         <Card className="flex max-h-[70vh] flex-col">
+          <div className="mb-3 flex items-center gap-3 border-b border-white/5 pb-3">
+            <AICore state={coreState} size={52} showLabel={false} />
+            <div>
+              <div className="font-display text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-200">Master Agent</div>
+              <div className="text-xs text-zinc-500">
+                Core state: <span className="text-cyan-200">{coreState}</span> — driven by the live API response, never simulated.
+              </div>
+            </div>
+          </div>
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
             {messages.length === 0 && !lastResult ? (
               <Empty message="No messages yet. Try: “Meri pending tasks list karo” or “Generate a summary report”." />
             ) : (
               messages.map((m) => (
                 <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${m.role === "user" ? "bg-zinc-100 text-zinc-900" : "bg-zinc-800 text-zinc-100"}`}>
+                  <div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${m.role === "user" ? "border border-cyan-300/30 bg-cyan-400/15 text-cyan-50" : "border border-white/8 bg-white/[0.05] text-zinc-100"}`}>
                     {m.role !== "user" && m.agent_key ? (
                       <div className="mb-1 text-[11px] uppercase tracking-wide opacity-60">agent: {m.agent_key}</div>
                     ) : null}
@@ -170,7 +194,7 @@ export default function CommandPage() {
               ))
             )}
             {lastResult ? (
-              <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-3 text-sm">
+              <div className="rounded-2xl border border-cyan-200/10 bg-black/25 p-3 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-zinc-400">Last command:</span>
                   <Badge value={lastResult.status} />
@@ -187,19 +211,19 @@ export default function CommandPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Command likhein… e.g. Kharcha 2500 petrol / Research electric bikes"
-              className="min-w-0 flex-1 rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+              className={`${inputCls} min-w-0 flex-1`}
             />
-            <button type="button" onClick={voiceInput} title="Voice input" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-900">
-              {listening ? "…" : "🎤"}
+            <button type="button" onClick={voiceInput} title="Voice input" className={btnGhostCls}>
+              {listening ? "●" : "🎤"}
             </button>
-            <button disabled={busy} className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 disabled:opacity-50">
+            <button disabled={busy} className={btnCls}>
               {busy ? "Working…" : "Send"}
             </button>
           </form>
         </Card>
 
         <Card className="max-h-[70vh] overflow-y-auto">
-          <h2 className="mb-3 text-sm font-semibold text-zinc-200">Pending approvals</h2>
+          <h2 className="mb-3 font-display text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200">Pending approvals</h2>
           {approvals.length === 0 ? (
             <p className="text-xs text-zinc-500">Nothing waiting for approval.</p>
           ) : (
