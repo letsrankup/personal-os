@@ -39,7 +39,7 @@ export default function SecurityPage() {
               ) : (
                 <ul className="space-y-2">
                   {rows.map((p) => (
-                    <li key={p.id} className="border-b border-zinc-800/60 pb-2 last:border-0">
+                    <li key={p.id} className="border-b border-white/5 pb-2 last:border-0">
                       <div className="font-mono text-sm text-zinc-100">{p.action}</div>
                       {p.description ? <div className="text-xs text-zinc-400">{p.description}</div> : null}
                     </li>
@@ -56,7 +56,7 @@ export default function SecurityPage() {
         <Empty message="No activity recorded for your account yet." />
       ) : (
         <Card className="p-0">
-          <ul className="divide-y divide-zinc-800/60">
+          <ul className="divide-y divide-white/5/60">
             {activity.map((a) => (
               <li key={a.id} className="flex flex-wrap items-baseline gap-x-3 px-4 py-2 text-sm">
                 <span className="text-zinc-200">{a.action}</span>
