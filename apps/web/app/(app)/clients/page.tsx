@@ -40,7 +40,7 @@ export default function ClientsPage() {
                   {c.phone ? <div>Phone: {c.phone}</div> : null}
                 </div>
                 {c.notes ? (
-                  <p className="mt-2 max-h-32 overflow-y-auto whitespace-pre-wrap rounded-lg bg-zinc-800/50 p-2 text-xs text-zinc-400">{c.notes}</p>
+                  <p className="mt-2 max-h-32 overflow-y-auto whitespace-pre-wrap rounded-lg bg-white/[0.06]/50 p-2 text-xs text-zinc-400">{c.notes}</p>
                 ) : null}
                 <div className="mt-2 flex gap-x-4 text-xs text-zinc-500">
                   <span>Inquiries logged: {inquiries.length}</span>
